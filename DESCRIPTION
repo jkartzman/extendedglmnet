@@ -1,0 +1,19 @@
+Package: extendedglmnet
+Title: Extended linear regression package
+Version: 1.0.0
+Authors@R: 
+    person("Joshua", "Kartzman", , "joshua.kartzman@stonybrook.edu", role = c("aut", "cre"))
+Description: Linear regression package that provides functionality
+    for ridge, lasso, and random lasso models.  These models are 
+    equipped to handle both linear and logistic response variables.
+Depends:
+    R (>= 3.6.0)
+Imports:
+    glmnet
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

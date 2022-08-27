@@ -1,0 +1,72 @@
+---
+title: "extendedglmnet"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{extendedglmnet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+## Introduction:
+The purpose of this package is to serve as an extension to glmnet.  It provides functionality for 3 different types of linear models--lasso, ridge, and random lasso--as well as 2 different types of response variables--linear and logistic.  This vignette will serve as a tutorial to use this package.
+
+## Loading the package
+```{r setup}
+library(extendedglmnet)
+```
+
+## Fitting a lasso model
+The lasso model is the easiest to fit since it's the default argument for the model type.  Below we see how to use the function.  The implementation returns a glm object similar to what would be returned by glmnet.  You can then predict new data by calling the predict function.
+```
+x1 <- 1:20
+x2 <- 5:24
+x <- matrix(c(x1,x2),ncol=2)
+y <- 3*x1+2*x2
+model <- extendedglmnet(x,y)
+predictions <- predict(model, newx = x)
+```
+
+## Fitting a ridge model
+Extendedglmnet can also return ridge regression models.  Below we see how to use the function.  This needs to be set using the model function parameter.  The implementation returns a glm object similar to what would be returned by glmnet.  You can then predict new data by calling the predict function.
+```
+x1 <- 1:20
+x2 <- 5:24
+x <- matrix(c(x1,x2),ncol=2)
+y <- 3*x1+2*x2
+model <- extendedglmnet(x,y,model="ridge")
+predictions <- predict(model, newx = x)
+```
+
+## Fitting a random lasso model
+Random lasso is an algorithm to fit a regression model using random sampling and bootstrapping.  This can generate better models than normal lasso or ridge, however it should be noted that it is significantly more computationlly expensive than either of those two algorithms.  The number of samples drawn when performing bootstrapping is determined using the B argument.  The number of parameters sampled is determined by q1 and q2.  Due to the expensive computational costs involved, these are inputted manually by the user as opposed to being selected through cross validation.  Below we see how to use the function.  Unlike the other two models this doesn't return a glm object, only a vector containing the model's intercept and coefficients.  Using these coefficients to predict a response variable, however, is trivial and is shown in the following example.
+```
+x1 <- 1:20
+x2 <- 5:24
+x <- matrix(c(x1,x2),ncol=2)
+y <- 3*x1+2*x2
+coef <- extendedglmnet(x,y,model="random lasso",B=100,q1=2,q2=2)
+predictions <- coef[2]*x[,1]+coef[3]*x[,2]+coef[1]
+```
+
+## Returning a logistic response variable
+Extendedglmnet can also handle a logistic response variable.  In order to train this type of model the response argument must be set to "logistic" and the trainY variable must contain a vector of 0s and 1s.  If the latter isn't done correctly and instead a continuous response variable is used this will return an error.  In the following example this is done on a lasso model, however the same can be done on ridge and random lasso models. 
+```
+x1 <- 1:20
+x2 <- 5:24
+x <- matrix(c(x1,x2),ncol=2)
+y <- c(rep(0,10),rep(1,10))
+model <- extendedglmnet(x,y)
+predictions <- predict(model, newx = x, response="logistic")
+```
+
+## Documentation
+If you have any other questions about the package, especially regarding parameters and what values are expected, please refer to the documentation
+```
+?extendedglmnet
+```
